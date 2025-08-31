@@ -78,4 +78,3 @@ export const authenticate: RequestHandler = (req: Request, res: Response, next: 
   }
   return next();
 };
-
