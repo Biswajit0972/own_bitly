@@ -8,6 +8,6 @@ export const clicks_on_short_urlsSchema = t.pgTable("clicks_on_short_urls", {
     user_agent: t.varchar("user_agent", {length: 255}).notNull(),
     ip_address: t.varchar("ip_address", {length: 255}).notNull(),
     referer: t.varchar("referer", {length: 255}).notNull(),
-    createdAt: t.varchar("created_at", {length: 255}).notNull().default("now()"),
-    updatedAt: t.varchar("updated_at", {length: 255}).notNull().default("now()")
+    createdAt: t.varchar("created_at", {length: 255}).notNull().default(new Date().toISOString()),
+    updatedAt: t.varchar("updated_at", {length: 255}).notNull().default(new Date().toISOString())
 })

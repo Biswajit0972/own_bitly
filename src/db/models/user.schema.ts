@@ -7,6 +7,6 @@ export const usersTable = pgTable("users", {
     email: varchar("email", {length: 255}).notNull().unique(),
     fullName: varchar("full_name", {length: 255}).notNull(),
     refreshToken: varchar("refresh_token", {length: 255}),
-    createdAt: varchar("created_at", {length: 255}).notNull().default("now()"),
-    updatedAt: varchar("updated_at", {length: 255}).notNull().default("now()")
+    createdAt: varchar("created_at", {length: 255}).notNull().default(new Date().toISOString()),
+    updatedAt: varchar("updated_at", {length: 255}).notNull().default(new Date().toISOString())
 });
