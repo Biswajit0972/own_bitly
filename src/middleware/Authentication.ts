@@ -33,7 +33,7 @@ function extractToken(req: Request): string | null {
   const cookieToken =
     (req as any).cookies?.access_token ||
     (req as any).cookies?.token ||
-    (req as any).cookies?.jwt;
+    (req as any).cookies;
 
   if (typeof cookieToken === "string" && cookieToken.length > 0) {
     return cookieToken;
