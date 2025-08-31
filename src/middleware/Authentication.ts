@@ -15,7 +15,6 @@ type DecodedUser = JwtPayload & { sub?: string; role?: string };
 function getJwtSecret(): string {
   const secret = process.env.JWT_SECRET;
   if (!secret) {
-    // Fail fast on misconfiguration
     throw new Error("JWT_SECRET is not set in environment");
   }
   return secret;
