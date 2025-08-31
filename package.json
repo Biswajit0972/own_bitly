@@ -24,6 +24,7 @@
     "drizzle-orm": "^0.44.5",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
+    "nanoid": "^5.1.5",
     "nodemon": "^3.1.10",
     "pg": "^8.16.3",
     "ts-node": "^10.9.2",
