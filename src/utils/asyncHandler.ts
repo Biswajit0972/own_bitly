@@ -1,5 +1,5 @@
 import {NextFunction, Request, Response} from "express";
-import {AppError} from "./AppError.ts";
+import {AppError} from "./AppError";
 
 type AsyncHandler = (req: Request, res: Response, next: NextFunction) => Promise<Response>;
 
