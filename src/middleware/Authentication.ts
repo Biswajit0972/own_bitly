@@ -13,7 +13,7 @@ declare global {
 type DecodedUser = JwtPayload & { sub?: string; role?: string };
 
 function getJwtSecret(): string {
-  const secret = process.env.JWT_SECRET;
+  const secret = process.env.ACCESS_TOKEN_SECRET;
   if (!secret) {
     throw new Error("JWT_SECRET is not set in environment");
   }
@@ -30,11 +30,11 @@ function extractToken(req: Request): string | null {
 
 
   const cookieToken =
-    (req as any).cookies?.access_token ||
+    (req as any).cookies?.accessToken ||
     (req as any).cookies?.token ||
     (req as any).cookies;
 
-  if (typeof cookieToken === "string" && cookieToken.length > 0) {
+    if (typeof cookieToken === "string" && cookieToken.length > 0) {
     return cookieToken;
   }
 
@@ -69,7 +69,7 @@ const verifyToken = (req: Request): DecodedUser | null => {
  */
 export const authenticate: RequestHandler = (req: Request, res: Response, next: NextFunction) => {
   const user = verifyToken(req);
-  if (!user) {
+    if (!user) {
     return res.status(401).json({
       error: "unauthorized",
       message: "Authentication required",
