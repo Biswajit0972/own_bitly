@@ -12,8 +12,7 @@ export const userProfile = asyncHandler(async (req: Request, res: Response) => {
     if (!id) {
         throw new AppError(400, "User ID is missing from request");
     }
-
-    // Select only safe fields (exclude password)
+    
     const user = await db
         .select({
             id: usersTable.id,
