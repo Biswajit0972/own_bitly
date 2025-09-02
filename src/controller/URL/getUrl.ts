@@ -1,18 +1,13 @@
-import {Request, Response} from "express";
-import {eq} from "drizzle-orm";
-import {asyncHandler} from "../../utils/asyncHandler.ts";
-import {AppError} from "../../utils/AppError.ts";
-import db from "../../db/databaseConnection.ts";
-import {shortUrlSchema} from "../../db/models/shortUrl.schema.ts";
-import {AppResponse} from "../../utils/AppResponse.ts";
-import {ShortCode} from "../../utils/Types/types.ts";
+import { Request, Response } from "express";
+import { asyncHandler } from "../../utils/asyncHandler";
+import { AppError } from "../../utils/AppError";
+import db from "../../db/databaseConnection";
+import { shortUrlSchema } from "../../db/models/shortUrl.schema";
+import { eq } from "drizzle-orm";
+import { ShortCode } from "../../utils/Types/types";
 
 export const getUrl = asyncHandler(async (req: Request, res: Response) => {
-    if (!req.user?.id) {
-        throw new AppError(401, "User not authorized for this operation");
-    }
-
-    const {shortCode} = req.params as  ShortCode;
+    const { shortCode } = req.params as ShortCode;
 
     const result = await db
         .select({
@@ -28,7 +23,6 @@ export const getUrl = asyncHandler(async (req: Request, res: Response) => {
         throw new AppError(404, "Short URL not found");
     }
 
-    return res
-        .status(200)
-        .json(new AppResponse("Short URL retrieved successfully", result[0], 200));
+
+    return res.redirect(result[0].long_url);
 });
