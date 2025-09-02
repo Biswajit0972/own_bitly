@@ -5,14 +5,14 @@ import { AppError } from "../../utils/AppError.ts";
 import db from "../../db/databaseConnection.ts";
 import { shortUrlSchema } from "../../db/models/shortUrl.schema.ts";
 import { AppResponse } from "../../utils/AppResponse.ts";
-import { UrlBody } from "../../utils/Types/types.ts";
+import {ShortCode, UrlBody} from "../../utils/Types/types.ts";
 
 export const updateUrl = asyncHandler(async (req: Request, res: Response) => {
     if (!req.user?.id) {
         throw new AppError(401, "User not authorized for this operation");
     }
 
-    const { shortCode } = req.params;
+    const { shortCode } = req.params as  ShortCode;
 
     const { url } = req.body as UrlBody;
 
