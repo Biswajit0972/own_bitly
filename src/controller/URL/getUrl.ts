@@ -11,7 +11,7 @@ export const getUrl = asyncHandler(async (req: Request, res: Response) => {
         throw new AppError(401, "User not authorized for this operation");
     }
 
-    const {id} = req.params;
+    const {shortCode} = req.params;
 
     const result = await db
         .select({
@@ -20,7 +20,7 @@ export const getUrl = asyncHandler(async (req: Request, res: Response) => {
             long_url: shortUrlSchema.long_url,
         })
         .from(shortUrlSchema)
-        .where(eq(shortUrlSchema.short_urlID, id))
+        .where(eq(shortUrlSchema.short_urlID, shortCode))
         .limit(1);
 
     if (result.length === 0) {

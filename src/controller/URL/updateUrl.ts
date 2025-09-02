@@ -12,7 +12,7 @@ export const updateUrl = asyncHandler(async (req: Request, res: Response) => {
         throw new AppError(401, "User not authorized for this operation");
     }
 
-    const { id } = req.params;
+    const { shortCode } = req.params;
 
     const { url } = req.body as UrlBody;
 
@@ -26,7 +26,7 @@ export const updateUrl = asyncHandler(async (req: Request, res: Response) => {
         .set({
             long_url: url,
         })
-        .where(eq(shortUrlSchema.short_urlID, id))
+        .where(eq(shortUrlSchema.short_urlID, shortCode))
         .returning({
             id: shortUrlSchema.id,
             shortCode: shortUrlSchema.short_urlID,

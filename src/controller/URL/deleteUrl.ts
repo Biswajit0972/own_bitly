@@ -12,11 +12,11 @@ export const deleteUrl = asyncHandler(async (req: Request, res: Response) => {
         throw new AppError(401, "User not authorized for this operation");
     }
 
-    const {id} = req.params;
+    const {shortCode} = req.params;
 
     const result = await db
         .delete(shortUrlSchema)
-        .where(eq(shortUrlSchema.short_urlID, id))
+        .where(eq(shortUrlSchema.short_urlID, shortCode))
         .returning({
             id: shortUrlSchema.id,
             shortCode: shortUrlSchema.short_urlID,

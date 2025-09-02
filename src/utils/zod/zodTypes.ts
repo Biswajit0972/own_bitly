@@ -14,3 +14,5 @@ export const shortenSchema = z.object({
     url: z.url().nonempty(),
     shortCode: z.string().optional(),
 });
+
+export const urlSchema = z.object({shortCode: z.string().nonempty()});
