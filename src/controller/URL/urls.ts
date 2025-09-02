@@ -8,7 +8,7 @@ import db from "../../db/databaseConnection.ts";
 import {shortUrlSchema} from "../../db/models/shortUrl.schema.ts";
 import {AppResponse} from "../../utils/AppResponse.ts";
 
-export const urls = asyncHandler(async (req: Request, res) => {
+export const urlShort = asyncHandler(async (req: Request, res:Response) => {
     if (!req.user?.id) {
         throw new AppError(400, "user authorized to this operation");
     }
