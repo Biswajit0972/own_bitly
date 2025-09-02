@@ -1,5 +1,5 @@
-import { Request, Response, NextFunction } from "express";
-import { z, ZodError } from "zod";
+import {Request, Response, NextFunction} from "express";
+import {z, ZodError} from "zod";
 
 export function validate<T extends z.ZodType>(schema: T) {
     return (
@@ -17,7 +17,28 @@ export function validate<T extends z.ZodType>(schema: T) {
                     details: (error as ZodError).message,
                 });
             }
-            return res.status(500).json({ error: "Unknown error" });
+            return res.status(500).json({error: "Unknown error"});
+        }
+    };
+}
+
+export const validateParams = <T extends z.ZodType>(validate: T) => {
+    return (
+        req: Request<unknown, unknown, z.output<T>>, // infer body type from schema's output
+        res: Response,
+        next: NextFunction
+    ) => {
+        try {
+            req.params = validate.parse(req.params);
+            next();
+        } catch (error) {
+            if (error instanceof ZodError) {
+                return res.status(400).json({
+                    error: "Validation failed",
+                    details: (error as ZodError).message,
+                });
+            }
+            return res.status(500).json({error: "Unknown error"});
         }
     };
 }
