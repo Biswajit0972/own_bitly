@@ -5,9 +5,9 @@ import db from "../../db/databaseConnection";
 import { shortUrlSchema } from "../../db/models/shortUrl.schema";
 import { eq } from "drizzle-orm";
 import { ShortCode } from "../../utils/Types/types";
+import {clicks_on_short_urlsSchema} from "../../db/models/clicks_on_short_urls.schema.ts";
 
-export const getUrl = asyncHandler(async (req: Request, res: Response) => {
-    console.log(req)
+export const redirect = asyncHandler(async (req: Request, res: Response) => {
 
     const { shortCode } = req.params as ShortCode;
 
@@ -26,6 +26,18 @@ export const getUrl = asyncHandler(async (req: Request, res: Response) => {
     if (result.length === 0) {
         throw new AppError(404, "Short URL not found");
     }
+
+    const userAgent = req.headers["user-agent"] || "unknown";
+    const ipAddress = req.ip || req.socket.remoteAddress || "unknown";
+    const referer = req.headers["referer"] || "direct";
+
+    // Insert into clicks table
+    await db.insert(clicks_on_short_urlsSchema).values({
+        short_url_id: shortCode,
+        user_agent: userAgent,
+        ip_address: ipAddress,
+        referer,
+    });
 
     let targetUrl = result[0].long_url;
 
