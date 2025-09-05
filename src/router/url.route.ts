@@ -10,10 +10,10 @@ import {deleteUrl} from "../controller/URL/deleteUrl.ts";
 
 const urlRouter = Router();
 
-urlRouter.post("/api/urls", authenticate, validate(shortenSchema), urlShort);
-urlRouter.get("/api/url/:shortCode",  validateParams(urlSchema), getUrl);
-urlRouter.put("/api/urls/update/:shortCode", authenticate,   validateParams(urlSchema), updateUrl);
-urlRouter.delete("/api/urls/delete/:shortCode", authenticate, validateParams(urlSchema), deleteUrl);
-urlRouter.get("/api/urls/all", authenticate,  getAllUrls);
+urlRouter.post("/api/url/short", authenticate, validate(shortenSchema), urlShort);  // ✅
+urlRouter.get("/api/url/:shortCode", validateParams(urlSchema), getUrl); // ✅
+urlRouter.put("/api/urls/update/:shortCode", authenticate, validateParams(urlSchema), updateUrl); // ✅
+urlRouter.delete("/api/urls/delete/:shortCode", authenticate, validateParams(urlSchema), deleteUrl); // ✅
+urlRouter.get("/api/urls/all", authenticate,  getAllUrls); // ✅
 
 export default urlRouter;

@@ -7,6 +7,8 @@ import { eq } from "drizzle-orm";
 import { ShortCode } from "../../utils/Types/types";
 
 export const getUrl = asyncHandler(async (req: Request, res: Response) => {
+    console.log(req)
+
     const { shortCode } = req.params as ShortCode;
 
 
