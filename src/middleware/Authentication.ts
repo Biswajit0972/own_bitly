@@ -34,7 +34,7 @@ function extractToken(req: Request): string | null {
     (req as any).cookies?.token ||
     (req as any).cookies;
 
-    if (typeof cookieToken === "string" && cookieToken.length > 0) {
+  if (typeof cookieToken === "string" && cookieToken.length > 0) {
     return cookieToken;
   }
 
@@ -69,7 +69,7 @@ const verifyToken = (req: Request): DecodedUser | null => {
  */
 export const authenticate: RequestHandler = (req: Request, res: Response, next: NextFunction) => {
   const user = verifyToken(req);
-    if (!user) {
+  if (!user) {
     return res.status(401).json({
       error: "unauthorized",
       message: "Authentication required",
@@ -77,3 +77,29 @@ export const authenticate: RequestHandler = (req: Request, res: Response, next: 
   }
   return next();
 };
+
+export const revalidateTokenAuth = (req: Request, res: Response, next: NextFunction) => {
+  let refreshToken = req.header("x-refresh-token") || req.header("X-Refresh-Token");
+
+  refreshToken = req.cookies?.refreshToken || refreshToken;
+
+  if (!refreshToken) {
+    return res.status(401).json({
+      error: "unauthorized",
+      message: "Refresh token required",
+    });
+  }
+
+  try {
+    const secret = process.env.REFRESH_TOKEN_SECRET || "";
+    const decoded = jwt.verify(refreshToken, secret) as DecodedUser;
+    req.user = decoded;
+    req.token = refreshToken;
+    return next();
+  } catch {
+    return res.status(401).json({
+      error: "unauthorized",
+      message: "Invalid refresh token",
+    });
+  }
+}
