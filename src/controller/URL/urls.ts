@@ -13,22 +13,24 @@ export const urlShort = asyncHandler(async (req: Request, res:Response) => {
         throw new AppError(400, "user authorized to this operation");
     }
 
-    const {url, shortCode} = req.body as UrlBody;
+    const {url, shortCode, tittle} = req.body as UrlBody;
 
     if (!url) {
         throw new AppError(400, "Url must be provided!")
     }
 
     const newShortCode = shortCode || nanoid(6);
-
+     console.log(tittle);
     const result = await db.insert(shortUrlSchema).values({
         short_urlID: newShortCode,
         long_url: url,
-        user_id: req.user?.id
+        user_id: req.user?.id,
+        tittle: tittle,
     }).returning({
         id: shortUrlSchema.id,
         shortCode: shortUrlSchema.short_urlID,
-        long_url: shortUrlSchema.long_url
+        long_url: shortUrlSchema.long_url,
+        tittle: shortUrlSchema.tittle,
     });
 
     if (!result[0].id || result.length === 0) {
