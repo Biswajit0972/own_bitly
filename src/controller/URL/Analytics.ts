@@ -1,11 +1,12 @@
 import {Request, Response} from "express";
-import {eq} from "drizzle-orm";
+import {eq, count} from "drizzle-orm";
 import {asyncHandler} from "../../utils/asyncHandler.ts";
 import {AppError} from "../../utils/AppError.ts";
 import db from "../../db/databaseConnection.ts";
 import {AppResponse} from "../../utils/AppResponse.ts";
 import {ShortCode} from "../../utils/Types/types.ts";
 import {clicks_on_short_urlsSchema} from "../../db/models/clicks_on_short_urls.schema.ts";
+import {shortUrlSchema} from "../../db/models/shortUrl.schema.ts";
 
 export const getAnalytics = asyncHandler(
     async (req: Request, res: Response) => {
@@ -18,8 +19,28 @@ export const getAnalytics = asyncHandler(
             throw new AppError(400, "Short code is required");
         }
 
-        const data = await db.select().from(clicks_on_short_urlsSchema).where(eq(clicks_on_short_urlsSchema.short_url_id, shortCode)).$dynamic();
+        const rows = await db
+            .select({
+                shortUrl: shortUrlSchema,
+                clickCount: count(clicks_on_short_urlsSchema.id),
+            })
+            .from(shortUrlSchema)
+            .leftJoin(
+                clicks_on_short_urlsSchema,
+                eq(clicks_on_short_urlsSchema.short_url_id, shortUrlSchema.short_urlID),
+            )
+            .where(eq(shortUrlSchema.short_urlID, shortCode))
+            .groupBy(shortUrlSchema.id);
 
-        res.status(200).json(new AppResponse("Analytics retrieved successfully", data, 200));
+        if (rows.length === 0) {
+            throw new AppError(404, "Short URL not found");
+        }
+
+        const { shortUrl, clickCount } = rows[0];
+
+        // Flatten the response: all shortUrl fields + clickCount
+        res
+            .status(200)
+            .json(new AppResponse("Analytics retrieved successfully", { ...shortUrl, clickCount }, 200));
     }
 )
