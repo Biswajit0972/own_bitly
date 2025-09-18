@@ -1,23 +1,23 @@
 import { Request, Response } from "express";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { asyncHandler } from "../../utils/asyncHandler.ts";
 import { AppError } from "../../utils/AppError.ts";
 import db from "../../db/databaseConnection.ts";
 import { shortUrlSchema } from "../../db/models/shortUrl.schema.ts";
 import { AppResponse } from "../../utils/AppResponse.ts";
-import {ShortCode, UrlBody} from "../../utils/Types/types.ts";
+import { ShortCode, UrlBody } from "../../utils/Types/types.ts";
 
 export const updateUrl = asyncHandler(async (req: Request, res: Response) => {
     if (!req.user?.id) {
         throw new AppError(401, "User not authorized for this operation");
     }
 
-    const { shortCode } = req.params as  ShortCode;
+    const { shortCode } = req.params as ShortCode;
 
-    const { url } = req.body as UrlBody;
+    const { url, tittle } = req.body as UrlBody;
 
-    if (!url) {
-        throw new AppError(400, "At least one field (url or shortCode) must be provided");
+    if (!url || !tittle) {
+        throw new AppError(400, "At least one field (url or tittle) must be provided");
     }
 
 
@@ -25,12 +25,17 @@ export const updateUrl = asyncHandler(async (req: Request, res: Response) => {
         .update(shortUrlSchema)
         .set({
             long_url: url,
+            tittle: tittle,
         })
-        .where(eq(shortUrlSchema.short_urlID, shortCode))
+        .where(and(
+            eq(shortUrlSchema.short_urlID, shortCode),
+            eq(shortUrlSchema.user_id, req.user.id)
+        ))
         .returning({
             id: shortUrlSchema.id,
             shortCode: shortUrlSchema.short_urlID,
             long_url: shortUrlSchema.long_url,
+            tittle: shortUrlSchema.tittle,
         });
 
     if (result.length === 0) {
