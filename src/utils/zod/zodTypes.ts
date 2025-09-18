@@ -12,6 +12,7 @@ export const loginSchema = z.object({identifier: z.string().nonempty(), password
 
 export const shortenSchema = z.object({
     url: z.url().nonempty(),
+    tittle: z.string().optional(),
     shortCode: z.string().optional(),
 });
 

@@ -12,7 +12,7 @@ const urlRouter = Router();
 
 urlRouter.post("/api/url/short", authenticate, validate(shortenSchema), urlShort);  // ✅
 urlRouter.get("/api/url/:shortCode", validateParams(urlSchema), redirect); // ✅
-urlRouter.put("/api/urls/update/:shortCode", authenticate, validateParams(urlSchema), updateUrl); // ✅
+urlRouter.put("/api/urls/update/:shortCode", authenticate,   validateParams(urlSchema), updateUrl); // ✅
 urlRouter.delete("/api/urls/delete/:shortCode", authenticate, validateParams(urlSchema), deleteUrl); // ✅
 urlRouter.get("/api/urls/all", authenticate,  getAllUrls); // ✅
 
