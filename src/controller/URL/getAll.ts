@@ -18,7 +18,7 @@ export const getAllUrls = asyncHandler(async (req: Request, res: Response) => {
             id: shortUrlSchema.id,
             shortUrlID: shortUrlSchema.short_urlID,
             longUrl: shortUrlSchema.long_url,
-            title: shortUrlSchema.tittle,
+            tittle: shortUrlSchema.tittle,
             clicksCount: count(clicks_on_short_urlsSchema.id),
             createdAt: shortUrlSchema.createdAt,
             user_id: shortUrlSchema.user_id
