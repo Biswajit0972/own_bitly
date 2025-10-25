@@ -1,23 +1,27 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
-export async function comparePassword(
-    hashedPassword: string,
-    plainPassword: string
-): Promise<boolean> {
-    return await bcrypt.compare(plainPassword, hashedPassword);
-}
+export class AuthenticationHelper {
+    private ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET || "yourAccessTokenSecret";
+    private REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET || "yourRefreshTokenSecret";
 
+    public async comparePassword(
+        hashedPassword: string,
+        plainPassword: string
+    ): Promise<boolean> {
+        return await bcrypt.compare(plainPassword, hashedPassword);
+    }
 
-const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET || "yourAccessTokenSecret";
-const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET || "yourRefreshTokenSecret";
+    public generateAccessToken(payload: object): string {
+        return jwt.sign(payload, this.ACCESS_TOKEN_SECRET, { expiresIn: '15m' });
+    }
 
-// Generate Access Token (short-lived)
-export function generateAccessToken(payload: object): string {
-    return jwt.sign(payload, ACCESS_TOKEN_SECRET, { expiresIn: '15m' });
-}
+    public generateRefreshToken(payload: object): string {
+        return jwt.sign(payload, this.REFRESH_TOKEN_SECRET, { expiresIn: '7d' });
+    }
 
-// Generate Refresh Token (longer-lived)
-export function generateRefreshToken(payload: object): string {
-    return jwt.sign(payload, REFRESH_TOKEN_SECRET, { expiresIn: '7d' });
+    public printTokens() {
+        console.log("Access Token:", this.ACCESS_TOKEN_SECRET);
+        console.log("Refresh Token:", this.REFRESH_TOKEN_SECRET);
+    }
 }
