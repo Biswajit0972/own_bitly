@@ -6,7 +6,9 @@ import { UserLogin} from "../../utils/Types/types";
 import db from "../../db/databaseConnection";
 import {usersTable} from "../../db/models/user.schema";
 import {AppResponse} from "../../utils/AppResponse";
-import {comparePassword, generateAccessToken, generateRefreshToken} from "../../utils/helper/helper.ts";
+import {AuthenticationHelper} from "../../utils/helper/helper.ts";
+
+const AuthHelper:AuthenticationHelper = new AuthenticationHelper();
 
 export const login = asyncHandler(async (req: Request, res:  Response) => {
     const {identifier, password} = req.body as UserLogin;
@@ -27,7 +29,7 @@ export const login = asyncHandler(async (req: Request, res:  Response) => {
         throw new AppError(404, "User not found");
     }
 
-    const isCredentialsValid = await comparePassword(fetchUser[0].password, cleanPassword);
+    const isCredentialsValid = await AuthHelper.comparePassword(fetchUser[0].password, cleanPassword);
 
     if (!isCredentialsValid) {
         throw new AppError(401,  "Unauthorized access!");
@@ -38,8 +40,8 @@ export const login = asyncHandler(async (req: Request, res:  Response) => {
         username: fetchUser[0].username
     }
 
-    const refreshToken = generateRefreshToken(payload);
-    const accessToken = generateAccessToken(payload);
+    const refreshToken = AuthHelper.generateRefreshToken(payload);
+    const accessToken = AuthHelper.generateAccessToken(payload);
     const user = fetchUser[0];
     await db.update(usersTable).set({refreshToken}).where(eq(usersTable.id, user.id)).execute();
 
@@ -54,4 +56,6 @@ export const login = asyncHandler(async (req: Request, res:  Response) => {
         sameSite: "strict",
         maxAge: 15 * 60 * 1000,
     }).json(new AppResponse("Login successful", {accessToken, refreshToken}, 200));
-})
+});
+
+AuthHelper.printTokens();
