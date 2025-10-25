@@ -5,7 +5,9 @@ import { AppError } from "../../utils/AppError";
 import db from "../../db/databaseConnection";
 import { usersTable } from "../../db/models/user.schema";
 import { AppResponse } from "../../utils/AppResponse"
-import { generateAccessToken } from "../../utils/helper/helper";
+import { AuthenticationHelper } from "../../utils/helper/helper";
+
+const AuthHelper: AuthenticationHelper = new AuthenticationHelper();
 
 export const updateAccessToken = asyncHandler(async (req: Request, res: Response) => {
     const id = req.user?.id;
@@ -22,7 +24,7 @@ export const updateAccessToken = asyncHandler(async (req: Request, res: Response
         username: fetchUser[0].username
     }
 
-    const accessToken = generateAccessToken(payload);
+    const accessToken = AuthHelper.generateAccessToken(payload);
     return res
         .status(200)
         .json(new AppResponse("User token updated successfully", { accessToken }, 201));
