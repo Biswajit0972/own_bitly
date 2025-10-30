@@ -58,4 +58,3 @@ export const login = asyncHandler(async (req: Request, res:  Response) => {
     }).json(new AppResponse("Login successful", {accessToken, refreshToken}, 200));
 });
 
-AuthHelper.printTokens();
