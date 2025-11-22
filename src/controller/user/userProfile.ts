@@ -3,7 +3,7 @@ import { eq } from "drizzle-orm";
 import { asyncHandler } from "../../utils/asyncHandler";
 import { AppError } from "../../utils/AppError";
 import db from "../../db/databaseConnection";
-import { usersTable } from "../../db/models/user.schema";
+import { usersTable } from "../../db/schema/user.schema";
 import { AppResponse } from "../../utils/AppResponse";
 
 export const userProfile = asyncHandler(async (req: Request, res: Response) => {
@@ -30,5 +30,5 @@ export const userProfile = asyncHandler(async (req: Request, res: Response) => {
 
     return res
         .status(200)
-        .json(new AppResponse( "User profile fetched successfully", user[0],  200));
+        .json(new AppResponse( true,"User profile fetched successfully", user[0],  200));
 });

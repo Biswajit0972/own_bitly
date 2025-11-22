@@ -3,7 +3,7 @@ import { eq, and, ne } from "drizzle-orm";
 import { asyncHandler } from "../../utils/asyncHandler";
 import { AppError } from "../../utils/AppError";
 import db from "../../db/databaseConnection";
-import { usersTable } from "../../db/models/user.schema";
+import { usersTable } from "../../db/schema/user.schema";
 import { AppResponse } from "../../utils/AppResponse";
 
 export const updateUserProfile = asyncHandler(async (req: Request, res: Response) => {
@@ -31,7 +31,7 @@ export const updateUserProfile = asyncHandler(async (req: Request, res: Response
         }
     }
 
-    // Perform update
+
     await db
         .update(usersTable)
         .set({
@@ -55,5 +55,5 @@ export const updateUserProfile = asyncHandler(async (req: Request, res: Response
 
     return res
         .status(200)
-        .json(new AppResponse( "User profile updated successfully", updatedUser[0], 201));
+        .json(new AppResponse( true,"User profile updated successfully", updatedUser[0], 201));
 });
