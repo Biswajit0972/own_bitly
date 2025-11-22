@@ -21,13 +21,13 @@ const authenticate = new AuthenticationHelper().authenticateRequest;
     DELETE  /api/urls/:code    -> delete
 */
 
-// Create + Get All URLs
+
 urlRouter
     .route("/")
     .post(authenticate, validate(shortenSchema), urlShort)
     .get(authenticate, getAllUrls);
 
-// Redirect + Update + Delete
+
 urlRouter
     .route("/:shortCode")
     .get(validateParams(urlSchema), redirect)
