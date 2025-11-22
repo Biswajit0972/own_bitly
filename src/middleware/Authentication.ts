@@ -1,4 +1,4 @@
-import type {Request, Response, NextFunction, RequestHandler} from "express";
+import type {Request, Response, NextFunction} from "express";
 import jwt, {type JwtPayload} from "jsonwebtoken";
 import {Authentication} from "../utils/Types/types.ts";
 
@@ -86,8 +86,7 @@ export class AuthenticationHelper implements Authentication {
 
         try {
             const secret = process.env.REFRESH_TOKEN_SECRET || "";
-            const decoded = jwt.verify(refreshToken, secret) as DecodedUser;
-            req.user = decoded;
+            req.user = jwt.verify(refreshToken, secret) as DecodedUser;
             req.token = refreshToken;
             return next();
         }catch (error) {
