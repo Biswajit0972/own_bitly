@@ -3,10 +3,11 @@ import {usersTable} from "./user.schema.ts";
 
 export const shortUrlSchema = t.pgTable("short_urls", {
         id: t.integer("id").primaryKey().generatedByDefaultAsIdentity(),
-        short_urlID: t.varchar("short_urlID", {length: 155}).notNull().unique(),
+        shortCode: t.varchar("shortCode", {length: 155}).notNull().unique(),
         long_url: t.varchar("long_url", {length: 555}).notNull(),
         user_id: t.integer("user_id").references(() => usersTable.id),
-        tittle: t.varchar("tittle", {length: 255}).default("My Shortened Link"),
+        title: t.varchar("title", {length: 255}).default("My Shortened Link"),
+        description: t.varchar("description", {length: 255}).default(`A shortened link created using our URL Shortener service.`),
         createdAt: t.varchar("created_at", {length: 255}).notNull().default(new Date().toISOString()),
         updatedAt: t.varchar("updated_at", {length: 255}).notNull().default(new Date().toISOString()),
     },
