@@ -3,7 +3,7 @@ import {eq} from "drizzle-orm";
 import {asyncHandler} from "../../utils/asyncHandler";
 import {AppError} from "../../utils/AppError";
 import db from "../../db/databaseConnection";
-import {usersTable} from "../../db/models/user.schema";
+import {usersTable} from "../../db/schema/user.schema";
 import {AppResponse} from "../../utils/AppResponse"
 import {AuthenticationHelper} from "../../utils/helper/helper";
 
@@ -19,7 +19,7 @@ export const updateAccessToken = asyncHandler(async (req: Request, res: Response
     const fetchUser = await db.select().from(usersTable).where(eq(usersTable.id, id)).limit(1).execute();
 
     if (fetchUser.length === 0 || !fetchUser) {
-        throw new AppError(404, "User not found");
+        throw new AppError(404, "User not found, login again");
     }
 
     const payload = {
@@ -30,5 +30,5 @@ export const updateAccessToken = asyncHandler(async (req: Request, res: Response
     const accessToken = AuthHelper.generateAccessToken(payload);
     return res
         .status(200)
-        .json(new AppResponse("User token updated successfully", {accessToken}, 201));
+        .json(new AppResponse(true,"User token updated successfully", {accessToken}, 201));
 });
