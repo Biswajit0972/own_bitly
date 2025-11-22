@@ -2,21 +2,21 @@ import {Request, Response} from "express";
 import {or, eq} from "drizzle-orm";
 import {asyncHandler} from "../../utils/asyncHandler";
 import {AppError} from "../../utils/AppError";
-import { UserLogin} from "../../utils/Types/types";
+import {UserLogin} from "../../utils/Types/types";
 import db from "../../db/databaseConnection";
-import {usersTable} from "../../db/models/user.schema";
+import {usersTable} from "../../db/schema/user.schema";
 import {AppResponse} from "../../utils/AppResponse";
 import {AuthenticationHelper} from "../../utils/helper/helper.ts";
 
-const AuthHelper:AuthenticationHelper = new AuthenticationHelper();
+const AuthHelper: AuthenticationHelper = new AuthenticationHelper();
 
-export const login = asyncHandler(async (req: Request, res:  Response) => {
+export const login = asyncHandler(async (req: Request, res: Response) => {
     const {identifier, password} = req.body as UserLogin;
 
-    const cleanIdentifier =   identifier.trim();
-    const cleanPassword =  password.trim();
+    const cleanIdentifier = identifier.trim();
+    const cleanPassword = password.trim();
 
-    if (!cleanIdentifier ||  !cleanPassword) {
+    if (!cleanIdentifier || !cleanPassword) {
         throw new AppError(400, "Missing required fields");
     }
 
@@ -32,10 +32,10 @@ export const login = asyncHandler(async (req: Request, res:  Response) => {
     const isCredentialsValid = await AuthHelper.comparePassword(fetchUser[0].password, cleanPassword);
 
     if (!isCredentialsValid) {
-        throw new AppError(401,  "Unauthorized access!");
+        throw new AppError(401, "Unauthorized access!");
     }
 
-    const payload =  {
+    const payload = {
         id: fetchUser[0].id,
         username: fetchUser[0].username
     }
@@ -55,6 +55,6 @@ export const login = asyncHandler(async (req: Request, res:  Response) => {
         secure: process.env.NODE_ENV === "production",
         sameSite: "strict",
         maxAge: 15 * 60 * 1000,
-    }).json(new AppResponse("Login successful", {accessToken, refreshToken}, 200));
+    }).json(new AppResponse(true, "Login successful", {accessToken, refreshToken}, 200));
 });
 

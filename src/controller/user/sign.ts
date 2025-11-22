@@ -5,7 +5,7 @@ import {asyncHandler} from "../../utils/asyncHandler";
 import {AppError} from "../../utils/AppError";
 import {User} from "../../utils/Types/types";
 import db from "../../db/databaseConnection";
-import {usersTable} from "../../db/models/user.schema";
+import {usersTable} from "../../db/schema/user.schema";
 import {AppResponse} from "../../utils/AppResponse";
 
 export const sign = asyncHandler(async (req: Request, res: Response) => {
@@ -58,5 +58,5 @@ export const sign = asyncHandler(async (req: Request, res: Response) => {
 
     return res
         .status(201)
-        .json(new AppResponse("User created successfully", user, 201));
+        .json(new AppResponse(true,"User created successfully", user, 201));
 });
