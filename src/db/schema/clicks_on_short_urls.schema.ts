@@ -11,4 +11,4 @@ export const clicks_on_short_urlsSchema = t.pgTable("clicks_on_short_urls", {
     referer: t.varchar("referer", {length: 255}).notNull(),
     createdAt: t.varchar("created_at", {length: 255}).notNull().default(new Date().toISOString()),
     updatedAt: t.varchar("updated_at", {length: 255}).notNull().default(new Date().toISOString())
-})
+});
