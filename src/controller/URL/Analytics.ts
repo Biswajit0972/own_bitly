@@ -5,8 +5,8 @@ import {AppError} from "../../utils/AppError.ts";
 import db from "../../db/databaseConnection.ts";
 import {AppResponse} from "../../utils/AppResponse.ts";
 import {ShortCode} from "../../utils/Types/types.ts";
-import {clicks_on_short_urlsSchema} from "../../db/models/clicks_on_short_urls.schema.ts";
-import {shortUrlSchema} from "../../db/models/shortUrl.schema.ts";
+import {clicks_on_short_urlsSchema} from "../../db/schema/clicks_on_short_urls.schema.ts";
+import {shortUrlSchema} from "../../db/schema/shortUrl.schema.ts";
 
 export const getAnalytics = asyncHandler(
     async (req: Request, res: Response) => {
