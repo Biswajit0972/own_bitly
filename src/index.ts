@@ -15,7 +15,7 @@ app.use(express.urlencoded({extended: true}));
 app.use(cookieParser());
 
 app.use(userRouter);
-app.use("/api/urls",urlRoute);
+app.use("/v1/api/urls",urlRoute);
 
 app.listen(process.env.PORT || 3000, () => {
     console.log(`Server is running on http://localhost:${process.env.PORT}`);
