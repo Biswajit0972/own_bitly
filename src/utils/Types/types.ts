@@ -16,3 +16,9 @@ export interface Authentication {
     authenticateRequest: (req: Request, res: Response, next: NextFunction) => Response | NextFunction | void;
     revalidateToken: (req: Request, res: Response, next: NextFunction) => Response | NextFunction | void;
 }
+
+export type CachedUrl = {
+    longUrl: string;
+    shortCode: string;
+    expirationDate: string;
+}

@@ -10,6 +10,7 @@ export const shortUrlSchema = t.pgTable("short_urls", {
         description: t.varchar("description", {length: 255}).default(`A shortened link created using our URL Shortener service.`),
         createdAt: t.varchar("created_at", {length: 255}).notNull().default(new Date().toISOString()),
         updatedAt: t.varchar("updated_at", {length: 255}).notNull().default(new Date().toISOString()),
+        expirationDate: t.date("expirationDate").default(new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString())
     },
     (table) => [
         t.index("idx_short_urls_user_id").on(table.user_id)
