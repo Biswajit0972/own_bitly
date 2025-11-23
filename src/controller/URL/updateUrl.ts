@@ -3,9 +3,10 @@ import { and, eq } from "drizzle-orm";
 import { asyncHandler } from "../../utils/asyncHandler.ts";
 import { AppError } from "../../utils/AppError.ts";
 import db from "../../db/databaseConnection.ts";
-import { shortUrlSchema } from "../../db/models/shortUrl.schema.ts";
+import { shortUrlSchema } from "../../db/schema/shortUrl.schema.ts";
 import { AppResponse } from "../../utils/AppResponse.ts";
 import { ShortCode, UrlBody } from "../../utils/Types/types.ts";
+import { client } from "../../redis/client.ts";
 
 export const updateUrl = asyncHandler(async (req: Request, res: Response) => {
     if (!req.user?.id) {
@@ -25,24 +26,27 @@ export const updateUrl = asyncHandler(async (req: Request, res: Response) => {
         .update(shortUrlSchema)
         .set({
             long_url: url,
-            tittle: tittle,
+            title: tittle,
         })
         .where(and(
-            eq(shortUrlSchema.short_urlID, shortCode),
+            eq(shortUrlSchema.shortCode, shortCode),
             eq(shortUrlSchema.user_id, req.user.id)
         ))
         .returning({
             id: shortUrlSchema.id,
-            shortCode: shortUrlSchema.short_urlID,
+            shortCode: shortUrlSchema.shortCode,
             long_url: shortUrlSchema.long_url,
-            tittle: shortUrlSchema.tittle,
+            tittle: shortUrlSchema.title,
         });
 
     if (result.length === 0) {
         throw new AppError(404, "Short URL not found or update failed");
     }
-
+    
+    // revalidate cache 
+    await client.del(shortCode);
+    
     return res
         .status(200)
-        .json(new AppResponse("Short URL updated successfully", result[0], 200));
+        .json(new AppResponse(true,"Short URL updated successfully", result[0], 200));
 });
