@@ -5,7 +5,7 @@ import {AppError} from "../../utils/AppError.ts";
 import db from "../../db/databaseConnection.ts";
 import {shortUrlSchema} from "../../db/schema/shortUrl.schema.ts";
 import {AppResponse} from "../../utils/AppResponse.ts";
-import {clicks_on_short_urlsSchema} from "../../db/schema/clicks_on_short_urls.schema.ts";
+import {clicksOnShortUrlsSchema} from "../../db/schema/clicks_on_short_urls.schema.ts";
 import {client} from "../../redis/client.ts";
 
 
@@ -41,14 +41,14 @@ export const getAllUrls = asyncHandler(async (req: Request, res: Response) => {
                 shortCode: shortUrlSchema.shortCode,
                 longUrl: shortUrlSchema.long_url,
                 title: shortUrlSchema.title,
-                clicksCount: count(clicks_on_short_urlsSchema.id),
+                clicksCount: count(clicksOnShortUrlsSchema.id),
                 createdAt: shortUrlSchema.createdAt,
                 user_id: shortUrlSchema.user_id
             })
             .from(shortUrlSchema)
             .leftJoin(
-                clicks_on_short_urlsSchema,
-                eq(clicks_on_short_urlsSchema.shortCode, shortUrlSchema.shortCode)
+                clicksOnShortUrlsSchema,
+                eq(clicksOnShortUrlsSchema.short_code, shortUrlSchema.shortCode)
             )
             .where(eq(shortUrlSchema.user_id, userId))
             .groupBy(
