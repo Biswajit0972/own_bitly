@@ -12,6 +12,15 @@ services:
       - 5432:5432
     volumes:
       - db_data:/var/lib/postgresql/data
-
+  cache:
+    image: redis/redis-stack:latest
+    restart: always
+    ports:
+      - 6379:6379
+    depends_on:
+      - db
+    volumes:
+      - redis_data:/data
 volumes:
   db_data:
+  redis_data:
