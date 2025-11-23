@@ -48,7 +48,7 @@ export const getAllUrls = asyncHandler(async (req: Request, res: Response) => {
             .from(shortUrlSchema)
             .leftJoin(
                 clicks_on_short_urlsSchema,
-                eq(clicks_on_short_urlsSchema.shortUrlId, shortUrlSchema.shortCode)
+                eq(clicks_on_short_urlsSchema.shortCode, shortUrlSchema.shortCode)
             )
             .where(eq(shortUrlSchema.user_id, userId))
             .groupBy(
