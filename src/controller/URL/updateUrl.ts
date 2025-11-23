@@ -44,8 +44,10 @@ export const updateUrl = asyncHandler(async (req: Request, res: Response) => {
     }
     
     // revalidate cache 
+    const checkIsCached = await client.json.get(shortCode);
+    if (checkIsCached)
     await client.del(shortCode);
-    
+
     return res
         .status(200)
         .json(new AppResponse(true,"Short URL updated successfully", result[0], 200));
