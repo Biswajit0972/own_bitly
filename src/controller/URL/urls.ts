@@ -5,7 +5,7 @@ import {AppError} from "../../utils/AppError.ts";
 import {UrlBody} from "../../utils/Types/types.ts";
 import {nanoid} from "nanoid";
 import db from "../../db/databaseConnection.ts";
-import {shortUrlSchema} from "../../db/models/shortUrl.schema.ts";
+import {shortUrlSchema} from "../../db/schema/shortUrl.schema.ts";
 import {AppResponse} from "../../utils/AppResponse.ts";
 
 export const urlShort = asyncHandler(async (req: Request, res:Response) => {
@@ -20,22 +20,23 @@ export const urlShort = asyncHandler(async (req: Request, res:Response) => {
     }
 
     const newShortCode = shortCode || nanoid(6);
-     console.log(tittle);
+
     const result = await db.insert(shortUrlSchema).values({
-        short_urlID: newShortCode,
+        shortCode: newShortCode,
         long_url: url,
         user_id: req.user?.id,
-        tittle: tittle,
+        title: tittle,
     }).returning({
         id: shortUrlSchema.id,
-        shortCode: shortUrlSchema.short_urlID,
+        shortCode: shortUrlSchema.shortCode,
         long_url: shortUrlSchema.long_url,
-        tittle: shortUrlSchema.tittle,
+        title: shortUrlSchema.title,
+        expirationDate: shortUrlSchema.expirationDate
     });
 
     if (!result[0].id || result.length === 0) {
         throw new AppError(500, "Something went's wrong while creating shortcode")
     }
 
-    return res.status(201).json(new AppResponse("Shortcode created successfully", result[0], 201));
+    return res.status(201).json(new AppResponse(true,"Shortcode created successfully", result[0], 201));
 })
