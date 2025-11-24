@@ -76,39 +76,370 @@ The redirect flow uses Express route matching to find the short code and immedia
 
 ## 6. API Endpoints
 
-### POST /api/shorten
+### Base URL
+All API endpoints are prefixed with the base URL. User routes use `/api/users` and URL routes use `/v1/api/urls`.
+
+---
+
+### User Authentication Endpoints
+
+#### POST /api/users/register
+
+**Description:** Register a new user account.
+
+**Request Body:**
+```json
+{
+  "username": "johndoe",
+  "email": "john@example.com",
+  "fullName": "John Doe",
+  "password": "securePassword123"
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "User created successfully",
+  "data": {
+    "id": "user_id",
+    "username": "johndoe",
+    "fullName": "John Doe",
+    "email": "john@example.com",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  "statusCode": 201
+}
+```
+
+---
+
+#### POST /api/users/login
+
+**Description:** Authenticate user and receive access/refresh tokens.
+
+**Request Body:**
+```json
+{
+  "identifier": "johndoe",
+  "password": "securePassword123"
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Login successful",
+  "data": {
+    "accessToken": "jwt_access_token",
+    "refreshToken": "jwt_refresh_token"
+  },
+  "statusCode": 200
+}
+```
+
+**Note:** Tokens are also set as HTTP-only cookies.
+
+---
+
+#### GET /api/users/profile
+
+**Description:** Get authenticated user's profile information.
+
+**Authentication:** Required (Bearer token)
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "User profile fetched successfully",
+  "data": {
+    "id": "user_id",
+    "username": "johndoe",
+    "email": "john@example.com",
+    "fullName": "John Doe",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+   },
+  "statusCode": 200
+}
+```
+
+---
+
+#### PUT /api/users/profile
+
+**Description:** Update authenticated user's profile (fullName and/or email).
+
+**Authentication:** Required (Bearer token)
+
+**Request Body:**
+```json
+{
+  "fullName": "John Updated",
+  "email": "newemail@example.com"
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "User profile updated successfully",
+  "data": {
+    "id": "user_id",
+    "fullName": "John Updated",
+    "email": "newemail@example.com",
+    "createdAt": "2024-01-01T00:00:00.000Z",
+    "updatedAt": "2024-01-02T00:00:00.000Z"
+  },
+  "statusCode": 201
+}
+```
+
+---
+
+#### GET /api/users/revalidate
+
+**Description:** Revalidate and get a new access token using refresh token.
+
+**Authentication:** Required (Refresh token in header `x-refresh-token` or cookie)
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "User token updated successfully",
+  "data": {
+    "accessToken": "new_jwt_access_token"
+  },
+  "statusCode": 201
+}
+```
+
+---
+
+#### POST /api/users/forget-password
+
+**Description:** Request password reset token (sends reset token to email).
+
+**Request Body:**
+```json
+{
+  "email": "john@example.com"
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Password reset link has been sent to your email",
+  "data": {
+    "resetToken": "reset_token"
+  },
+  "statusCode": 200
+}
+```
+
+---
+
+#### POST /api/users/reset-password
+
+**Description:** Reset user password using reset token.
+
+**Authentication:** Required (Bearer token)
+
+**Request Body:**
+```json
+{
+  "token": "reset_token",
+  "newPassword": "newSecurePassword123"
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Password has been reset successfully",
+  "data": null,
+  "statusCode": 200
+}
+```
+
+---
+
+### URL Shortener Endpoints
+
+#### POST /v1/api/urls
 
 **Description:** Create a new short URL.
+
+**Authentication:** Required (Bearer token)
+
 **Request Body:**
-
 ```json
 {
-  "longUrl": "https://example.com/page"
+  "url": "https://example.com/very/long/url/path",
+  "tittle": "My Short URL Title",
+  "shortCode": "custom123"
+}
+```
+
+**Note:** `tittle` and `shortCode` are optional. If `shortCode` is not provided, a random 6-character code will be generated.
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Shortcode created successfully",
+  "data": {
+    "id": "url_id",
+    "shortCode": "custom123",
+    "long_url": "https://example.com/very/long/url/path",
+    "title": "My Short URL Title",
+    "expirationDate": "2024-12-31T23:59:59.000Z"
+  },
+  "statusCode": 201
+}
+```
+
+---
+
+#### GET /v1/api/urls
+
+**Description:** Get all short URLs for the authenticated user with pagination.
+
+**Authentication:** Required (Bearer token)
+
+**Query Parameters:**
+- `page` (optional): Page number (default: 1)
+- `limit` (optional): Items per page (default: 10)
+
+**Example:** `/v1/api/urls?page=1&limit=10`
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Short URLs retrieved successfully",
+  "data": {
+    "data": [
+      {
+        "id": "url_id",
+        "shortCode": "abc123",
+        "longUrl": "https://example.com",
+        "title": "Example URL",
+        "clicksCount": 42,
+        "createdAt": "2024-01-01T00:00:00.000Z",
+        "user_id": "user_id"
+      }
+    ],
+    "pagination": {
+      "totalItems": 100,
+      "page": 1,
+      "limit": 10,
+      "totalPages": 10
+    }
+  },
+  "statusCode": 200
+}
+```
+
+---
+
+#### GET /v1/api/urls/:shortCode
+
+**Description:** Redirect to the original long URL and log analytics data.
+
+**Authentication:** Not required (public endpoint)
+
+**Response:** HTTP 302 Redirect to the original URL
+
+**Note:** This endpoint tracks analytics including IP address, browser, referer, and user agent.
+
+---
+
+#### PUT /v1/api/urls/:shortCode
+
+**Description:** Update an existing short URL (long URL and/or title).
+
+**Authentication:** Required (Bearer token)
+
+**Request Body:**
+```json
+{
+  "url": "https://updated-example.com/new/path",
+  "tittle": "Updated Title"
 }
 ```
 
 **Response:**
-
 ```json
 {
-  "shortUrl": "https://yourdomain.com/abc123",
-  "shortCode": "abc123"
+  "success": true,
+  "message": "Short URL updated successfully",
+  "data": {
+    "id": "url_id",
+    "shortCode": "abc123",
+    "long_url": "https://updated-example.com/new/path",
+    "tittle": "Updated Title"
+  },
+  "statusCode": 200
 }
 ```
 
-### GET /:shortCode
+---
 
-**Description:** Redirects to the original long URL and logs analytics.
+#### DELETE /v1/api/urls/:shortCode
 
-### GET /api/analytics/:shortCode
+**Description:** Delete a short URL.
 
-**Description:** Returns analytics data for a specific short code.
+**Authentication:** Required (Bearer token)
+
 **Response:**
-
 ```json
 {
-  "clicks": 42,
-  "analytics": [ ... ]
+  "success": true,
+  "message": "Short URL deleted successfully",
+  "data": {
+    "id": "url_id",
+    "shortCode": "abc123",
+    "long_url": "https://example.com"
+  },
+  "statusCode": 200
+}
+```
+
+---
+
+### Analytics Endpoints
+
+**Note:** Analytics endpoint exists in the codebase (`getAnalytics` controller) but is not currently registered in the router. To use it, add the route to `url.route.ts`:
+
+```typescript
+GET /v1/api/urls/:shortCode/analytics
+```
+
+**Description:** Get analytics data for a specific short code.
+
+**Authentication:** Required (Bearer token)
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Analytics retrieved successfully",
+  "data": {
+    "id": "url_id",
+    "shortCode": "abc123",
+    "long_url": "https://example.com",
+    "clickCount": 42,
+    ...
+  },
+  "statusCode": 200
 }
 ```
 

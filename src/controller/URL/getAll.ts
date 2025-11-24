@@ -20,7 +20,6 @@ export const getAllUrls = asyncHandler(async (req: Request, res: Response) => {
     }
 
     const userId = req.user.id;
-
     // Better caching key
     const cacheKey = `user:${userId}:urls:limit=${limit}:page=${page}`;
 
